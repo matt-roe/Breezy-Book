@@ -1,5 +1,7 @@
 .env
 
+/pocketbase_0.8.0_windows_amd64/
+
 # Logs
 logs
 *.log

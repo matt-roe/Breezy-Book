@@ -34,3 +34,7 @@ Breezy-Book.code-workspace
 test-results/
 playwright-report/
 pocketbase_0.8.0_windows_amd64/
+pocketbase_0.8.0_windows_amd64
+/pocketbase_0.8.0_windows_amd64
+/pocketbase_0.8.0_windows_amd64/
+pocketbase_0.8.0_windows_amd64/*

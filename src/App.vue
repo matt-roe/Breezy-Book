@@ -14,6 +14,7 @@
           <RouterLink to="/">Home</RouterLink>
           <RouterLink to="/dashboard">Dashboard</RouterLink>
           <RouterLink to="/feed">Feed</RouterLink>
+          <RouterLink to="/about">About</RouterLink>
         </nav>
       </div>
       <v-spacer></v-spacer>

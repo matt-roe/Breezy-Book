@@ -21,6 +21,8 @@ import client from '@/pocketbase';
 // Import custom pocketBase type
 import { pocketBaseSymbol } from "@/symbols/injectionSymbols"
 
+//import { easepick, RangePlugin, LockPlugin } from '@easepick/bundle';
+
 const app = createApp(App)
 
 app.use(createPinia())

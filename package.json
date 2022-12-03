@@ -13,6 +13,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@easepick/bundle": "^1.2.0",
     "@vueuse/core": "^9.6.0",
     "pinia": "^2.0.26",
     "pocketbase": "^0.8.2",

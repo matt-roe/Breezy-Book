@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
+	import Number from '$lib/components/Number.svelte';
 
 	import { flip } from 'svelte/animate';
 	import InputField from '$lib/components/InputField.svelte';
@@ -11,6 +12,7 @@
 	import { Address, Elements, LinkAuthenticationElement, PaymentElement } from '$lib/stripe';
 	import { loadStripe } from '@stripe/stripe-js';
 	import { onMount } from 'svelte';
+	import { select_options } from 'svelte/internal';
 
 	let active_step: string;
 
@@ -32,6 +34,14 @@
 		{
 			id: 0,
 			title: 'Room 1',
+			per_night: 5000,
+			image_url:
+				'https://c1.wallpaperflare.com/preview/812/711/788/terrace-landscape-cottages-vacation-rentals-tuscany.jpg'
+		},
+		{
+			id: 1,
+			title: 'Room 2',
+			per_night: 10000,
 			image_url:
 				'https://c1.wallpaperflare.com/preview/812/711/788/terrace-landscape-cottages-vacation-rentals-tuscany.jpg'
 		}
@@ -69,7 +79,13 @@
 	let elements: any;
 	let processing = false;
 
-	let amount = 5000;
+	let roomTotal = 0;
+
+	let locale: string = 'en';
+
+	let numNights = 7;
+
+	let amount: number = 0;
 
 	async function submit() {
 		// avoid processing duplicates
@@ -101,40 +117,44 @@
 		console.log({ stripe });
 	});
 
+	async function prepClientSecret() {
+		let variables = { roomTotal: roomTotal, numNights: numNights };
+		const response = await fetch('/payment-intent', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+				// TO-DO: add the proper client side encryption of data transfered to server endpoints.
+				//Authorization: `ApiKey ${SWOP_API_KEY}`
+			},
+			body: JSON.stringify(variables)
+		});
+		data = await response.json();
+		clientSecret = data.payment_intent.client_secret;
+		amount = data.amount / 100;
+		const result = { clientSecret: data.payment_intent.client_secret, amount: amount };
+		console.log({ result });
+		return result;
+	}
+
 	let steps: Array<string> = ['Room', 'Info', 'Payment', 'Confirmation'],
 		currentActive: number = 1,
 		progressBar: any;
 
 	const handleProgress = (stepIncrement: number) => {
-		console.log({ stepIncrement });
-		progressBar.handleProgress(stepIncrement);
-		console.log({ stepIncrement });
 		// if statements per step
 		if (currentActive == 3) {
-			let variables = { amount: amount };
-			const response = fetch('/payment-intent', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-					// TO-DO: add the proper client side encryption of data transfered to server endpoints.
-					//Authorization: `ApiKey ${SWOP_API_KEY}`
-				},
-				body: JSON.stringify({
-					variables
-				})
+			formData.selected_rooms.forEach((roomId) => {
+				roomTotal += room_list[roomId].per_night;
 			});
-			console.log(response);
-			clientSecret = response;
+			console.log({ roomTotal });
 		}
+		if (currentActive == 4) {
+		}
+		console.log({ currentActive });
+		progressBar.handleProgress(stepIncrement);
+		console.log({ stepIncrement });
+		console.log({ currentActive });
 	};
-
-	const options = [1, 2, 3];
-	let selectedOption = '';
-
-	let plans = [
-		{ priceId: 'price_1NYdNEFGOJh0CixlAwIb5RhE', text: `Pro Plan - $39.99 USD / month` },
-		{ priceId: 'price_1MsG9vFGOJh0CixlJcDLxKSP', text: `Premium Plan - $99.99 USD / month` }
-	];
 
 	const handleSubmit = () => {
 		console.log('Your form data => ', formData);
@@ -167,7 +187,8 @@
 										<input
 											type="checkbox"
 											checked={false}
-											bind:value={formData.selected_rooms}
+											bind:group={formData.selected_rooms}
+											value={room_list[index].id}
 											class="checkbox checkbox-primary"
 										/>
 									</label>
@@ -177,6 +198,11 @@
 					{/each}
 				</div>
 			{:else if currentActive == 2}
+				<h3>Date range picker here! numNights</h3>
+			{:else if currentActive == 3}
+				<h3>
+					Configurations for stay, like extra costs. Number of people staying in the room, etc.
+				</h3>
 				<InputField label={'Name'} bind:value={formData.name} />
 				<InputField label={'Surname'} bind:value={formData.surname} />
 				<InputField label={'Email'} bind:value={formData.email} />
@@ -184,7 +210,6 @@
 				<InputField label={'City'} bind:value={formData.city} />
 				<InputField label={'Country'} bind:value={formData.country} />
 				<InputField label={'Postcode'} bind:value={formData.postcode} />
-			{:else if currentActive == 3}
 				<form
 					id="prep_intent"
 					method="POST"
@@ -196,33 +221,44 @@
 						};
 					}}
 				>
-					<input type="hidden" name="amount" value={amount} />
-					<button>Pay Now!</button>
+					<input type="hidden" name="roomTotal" value={roomTotal} />
+					<input type="hidden" name="numNights" value={numNights} />
 				</form>
 			{:else if currentActive == 4}
-				<Elements
-					{stripe}
-					{clientSecret}
-					theme="flat"
-					labels="floating"
-					variables={{ colorPrimary: '#70acc7' }}
-					rules={{ '.Input': { border: 'solid 2px #000000' } }}
-					bind:elements
-				>
-					<form on:submit|preventDefault={submit}>
-						<LinkAuthenticationElement />
-						<PaymentElement />
-						<Address />
-						<button class="btn-secondary" disabled={processing}>
-							{#if processing}
-								Processing...
-							{:else}
-								Subscribe
-							{/if}
-						</button>
-					</form>
-				</Elements>
-				<button class="btn submit">Pay</button>
+				{#await prepClientSecret()}
+					<p>Loading...</p>
+				{:then result}
+					<p>roomTotal: {roomTotal}</p>
+					<p>numNights: {numNights}</p>
+					<p>total_amount: {result.amount}</p>
+					<p>
+						<Number number={amount} {locale} />
+					</p>
+					<Elements
+						{stripe}
+						{clientSecret}
+						theme="flat"
+						labels="floating"
+						variables={{ colorPrimary: '#70acc7' }}
+						rules={{ '.Input': { border: 'solid 2px #000000' } }}
+						bind:elements
+					>
+						<form on:submit|preventDefault={submit}>
+							<LinkAuthenticationElement />
+							<PaymentElement />
+							<Address />
+							<button class="btn submit" disabled={processing}>
+								{#if processing}
+									Processing...
+								{:else}
+									Pay
+								{/if}
+							</button>
+						</form>
+					</Elements>
+				{:catch error}
+					<p>Error: {error.message}</p>
+				{/await}
 			{/if}
 		</form>
 

@@ -1,3 +1,9 @@
+I think we maybe use
+https://docs.strapi.io/dev-docs/installation/docker
+with
+https://market.strapi.io/plugins/strapi-plugin-rest-cache
+and the configs for the rooms
+
 # create-svelte
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).

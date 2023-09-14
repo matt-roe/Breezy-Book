@@ -2,19 +2,24 @@
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 	import Number from '$lib/components/Number.svelte';
 
-	import { flip } from 'svelte/animate';
 	import InputField from '$lib/components/InputField.svelte';
 
+	import { Swipe, SwipeItem } from 'svelte-swipe';
+	const swipeConfig = {
+		autoplay: false,
+		delay: 2000,
+		showIndicators: true,
+		transitionDuration: 1000,
+		defaultIndex: 0
+	};
+	import { flip } from 'svelte/animate';
+
 	// TO DO: https://stripe.com/docs/billing/subscriptions/build-subscriptions?ui=elements
-	import { applyAction, enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { PUBLIC_STRIPE_KEY } from '$env/static/public';
 	import { Address, Elements, LinkAuthenticationElement, PaymentElement } from '$lib/stripe';
 	import { loadStripe } from '@stripe/stripe-js';
 	import { onMount } from 'svelte';
-	import { select_options } from 'svelte/internal';
-
-	let active_step: string;
 
 	let formData = {
 		name: '',
@@ -50,40 +55,25 @@
 	/** @type {import('./$types').PageData} */
 	export let data: any = {};
 
-	/** @type {import('./$types').ActionData} */
-	export let form: any = {};
-
 	/**
 	 * @type {import("@stripe/stripe-js").Stripe | null}
 	 */
 	let stripe: any = null;
 	/**
-	 * @type {string | null}
-	 */
-	let clientSecret = '';
-	/**
-	 * @type {string | null}
-	 */
-	let selectedPlan = null;
-	/**
-	 * @type {string | null}
-	 */
-	let priceId = '';
-	/**
 	 * @type {import("@stripe/stripe-js").StripeError | null}
 	 */
 	let error = null;
-	/**
-	 * @type {any}
-	 */
-	let elements: any;
-	let processing = false;
 
-	let roomTotal = 0;
+	let clientSecret: string | null = '';
+
+	let elements: any;
+	let processing: boolean = false;
+
+	let roomTotal: number = 0;
 
 	let locale: string = 'en';
 
-	let numNights = 7;
+	let numNights: number = 7;
 
 	let amount: number = 0;
 
@@ -166,42 +156,46 @@
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
-<main>
-	<div class="container">
+<main class="w-screen h-screen">
+	<div class="container mx-auto h-fit grid inline-flex items-baseline">
 		<ProgressBar {steps} bind:currentActive bind:this={progressBar} />
-
-		<form class="form-container" on:submit={handleSubmit}>
+		<form class="w-10/12" on:submit={handleSubmit}>
 			{#if currentActive == 1}
-				<div class="carousel carousel-center max-w-md p-4 space-x-4 bg-neutral rounded-box">
-					{#each room_list as item, index (item.id)}
-						<div class="carousel-item card w-96 bg-base-100 shadow-xl">
-							<figure>
-								<img src={room_list[index].image_url} alt="Shoes" class="img" />
-							</figure>
-							<div class="card-body">
-								<h2 class="card-title">{room_list[index].title}</h2>
-								<p>If a dog chews shoes whose shoes does he choose?</p>
-								<div class="card-actions form-control justify-end">
-									<label class="label cursor-pointer">
-										<span class="label-text">Stay here</span>
-										<input
-											type="checkbox"
-											checked={false}
-											bind:group={formData.selected_rooms}
-											value={room_list[index].id}
-											class="checkbox checkbox-primary"
-										/>
-									</label>
+				<div class="swipe-holder">
+					<Swipe {...swipeConfig}>
+						{#each room_list as item, index (item.id)}
+							<SwipeItem>
+								<div class="card text-center shadow-2xl">
+									<figure class="px-10 pt-10">
+										<img src={room_list[index].image_url} alt="" class="img rounded-xl" />
+									</figure>
+									<div class="card-body">
+										<h2 class="card-title">{room_list[index].title}</h2>
+										<p>If a dog chews shoes whose shoes does he choose?</p>
+										<div class="card-actions form-control has-pointer-event justify-center">
+											<label class="label cursor-pointer">
+												<span class="label-text">Stay here</span>
+												<input
+													type="checkbox"
+													checked={false}
+													bind:group={formData.selected_rooms}
+													value={room_list[index].id}
+													class="checkbox checkbox-primary"
+												/>
+											</label>
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
-					{/each}
+							</SwipeItem>
+						{/each}
+					</Swipe>
 				</div>
 			{:else if currentActive == 2}
-				<h3>Date range picker here! numNights</h3>
+				<h3>Date range picker here!</h3>
 			{:else if currentActive == 3}
 				<h3>
-					Configurations for stay, like extra costs. Number of people staying in the room, etc.
+					Info and configurations for stay, maybe extra costs. Number of people staying in the room,
+					etc.
 				</h3>
 				<InputField label={'Name'} bind:value={formData.name} />
 				<InputField label={'Surname'} bind:value={formData.surname} />
@@ -210,29 +204,15 @@
 				<InputField label={'City'} bind:value={formData.city} />
 				<InputField label={'Country'} bind:value={formData.country} />
 				<InputField label={'Postcode'} bind:value={formData.postcode} />
-				<form
-					id="prep_intent"
-					method="POST"
-					use:enhance={() => {
-						return async ({ result }) => {
-							await applyAction(result);
-							console.log({ result });
-							clientSecret = result.data.client_secret;
-						};
-					}}
-				>
-					<input type="hidden" name="roomTotal" value={roomTotal} />
-					<input type="hidden" name="numNights" value={numNights} />
-				</form>
 			{:else if currentActive == 4}
 				{#await prepClientSecret()}
 					<p>Loading...</p>
 				{:then result}
-					<p>roomTotal: {roomTotal}</p>
-					<p>numNights: {numNights}</p>
-					<p>total_amount: {result.amount}</p>
+					<p>Room price per night: $<Number number={roomTotal / 100} {locale} /></p>
+					<p>Number of nights: {numNights}</p>
 					<p>
-						<Number number={amount} {locale} />
+						After credit card processing with Stripe (2.9% + 30c) and Breezy Book fee (2%) your
+						total is $<Number number={amount} {locale} />
 					</p>
 					<Elements
 						{stripe}
@@ -276,21 +256,19 @@
 </main>
 
 <style>
+	.swipe-holder {
+		height: 50vh;
+		width: 100%;
+	}
+	img {
+		max-width: 100%;
+		height: auto;
+		max-height: 200px;
+	}
+	.has-pointer-event {
+		pointer-events: fill;
+	}
 	@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
-
-	* {
-		box-sizing: border-box;
-	}
-
-	main {
-		font-family: 'Muli', sans-serif;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 100vh;
-		margin: 0;
-	}
-
 	.btn {
 		background-color: #3498db;
 		color: #fff;
@@ -302,32 +280,19 @@
 		margin: 5px;
 		font-size: 14px;
 	}
-
 	.btn:active {
 		transform: scale(0.98);
 	}
-
 	.btn:focus {
 		outline: 0;
 	}
-
 	.btn:disabled {
 		background-color: #e0e0e0;
 		cursor: not-allowed;
 	}
-
 	.step-button {
 		margin-top: 1rem;
 		text-align: center;
-	}
-
-	.form-container {
-		text-align: center;
-		max-width: 100%;
-		min-width: 200px;
-	}
-	.img {
-		width: 300px;
 	}
 	.submit {
 		background: linear-gradient(to bottom, #44c767 5%, #50b01c 100%);
@@ -336,8 +301,5 @@
 	.submit:hover {
 		background: linear-gradient(to bottom, #50b01c 5%, #44c767 100%);
 		background-color: #50b01c;
-	}
-	.message {
-		text-align: center;
 	}
 </style>

@@ -3,8 +3,8 @@
 	export let locale = 'en';
 
 	$: formattedNumber = number.toLocaleString(locale, {
-		notation: 'compact',
-		compactDisplay: 'short'
+		notation: 'standard',
+		compactDisplay: 'long'
 	});
 </script>
 

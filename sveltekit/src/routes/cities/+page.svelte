@@ -36,6 +36,12 @@
 </svelte:head>
 
 <main class="w-screen h-screen">
+	<p>
+		This is my usage of the Strapi API to load all the cities of Alaska, USA. Cities are the
+		existing example data from the Redis powered pfapi extension setup/install. I will likely need
+		to hit regular API endpoints without the Redis cache setup at first, as I think the
+		configuration of those cached endpoints is a bit confusing.
+	</p>
 	<h1>product <strong>{data}</strong></h1>
 	{JSON.stringify(data.product)}
 	<div class="container mx-auto h-fit grid inline-flex items-baseline">

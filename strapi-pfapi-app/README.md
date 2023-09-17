@@ -1,4 +1,4 @@
-Node 16.20.2
+Node v16.20.2
 
 # 🚀 Getting started with Strapi
 
@@ -32,6 +32,12 @@ Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-
 npm run build
 # or
 yarn build
+
+docker build \
+  --build-arg NODE_ENV=production \
+  # --build-arg STRAPI_URL=https://api.example.com \ # Uncomment to set the Strapi Server URL
+  -t mystrapiapp:latest \ # Replace with your image name
+  -f Dockerfile.prod .
 ```
 
 ## ⚙️ Deployment

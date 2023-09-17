@@ -20,6 +20,7 @@
     "strapi-plugin-pfapi": "^2.6.9",
     "strapi-plugin-pfapi-data": "^2.6.9",
     "strapi-plugin-preview-button": "^2.0.0",
+    "strapi-provider-cloudflare-r2": "^0.2.3",
     "strapi-stripe": "^3.4.1"
   },
   "author": {

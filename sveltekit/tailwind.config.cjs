@@ -1,7 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    content: ['./src/**/*.{html,js}'],
-    plugins: [require("daisyui")],
+    content: ['./src/**/*.{html,js,svelte,ts}'],
+    plugins: [require('daisyui')],
+    daisyui: {
+      themes: ["business"],
+    },
     theme: {
       colors: {
         'blue': '#1fb6ff',

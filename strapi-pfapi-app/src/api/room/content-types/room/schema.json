@@ -29,17 +29,17 @@
         "audios"
       ]
     },
-    "roomUID": {
-      "type": "uid"
-    },
     "baseNightPrice": {
       "type": "decimal"
     },
-    "location": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::location.location",
-      "inversedBy": "room"
+    "image_url": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "per_night": {
+      "type": "biginteger"
     }
   }
 }

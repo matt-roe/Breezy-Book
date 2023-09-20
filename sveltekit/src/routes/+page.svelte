@@ -5,13 +5,7 @@
 	import InputField from '$lib/components/InputField.svelte';
 
 	import { Swipe, SwipeItem } from 'svelte-swipe';
-	const swipeConfig = {
-		autoplay: false,
-		delay: 2000,
-		showIndicators: true,
-		transitionDuration: 1000,
-		defaultIndex: 0
-	};
+
 	import { flip } from 'svelte/animate';
 
 	// TO DO: https://stripe.com/docs/billing/subscriptions/build-subscriptions?ui=elements
@@ -20,6 +14,25 @@
 	import { Address, Elements, LinkAuthenticationElement, PaymentElement } from '$lib/stripe';
 	import { loadStripe } from '@stripe/stripe-js';
 	import { onMount } from 'svelte';
+
+	import type { PageData } from './$types';
+
+	/** @type {import('./$types').PageData} */
+	export let data: any = {};
+
+	const swipeConfig = {
+		autoplay: false,
+		delay: 2000,
+		showIndicators: true,
+		transitionDuration: 1000,
+		defaultIndex: 0
+	};
+
+	let swipe_holder_height = 0;
+
+	function heightChanged({ detail }) {
+		swipe_holder_height = detail.height;
+	}
 
 	let formData = {
 		name: '',
@@ -34,26 +47,6 @@
 		card_no: '',
 		selected_rooms: []
 	};
-
-	let room_list = [
-		{
-			id: 0,
-			title: 'Room 1',
-			per_night: 5000,
-			image_url:
-				'https://c1.wallpaperflare.com/preview/812/711/788/terrace-landscape-cottages-vacation-rentals-tuscany.jpg'
-		},
-		{
-			id: 1,
-			title: 'Room 2',
-			per_night: 10000,
-			image_url:
-				'https://c1.wallpaperflare.com/preview/812/711/788/terrace-landscape-cottages-vacation-rentals-tuscany.jpg'
-		}
-	];
-
-	/** @type {import('./$types').PageData} */
-	export let data: any = {};
 
 	/**
 	 * @type {import("@stripe/stripe-js").Stripe | null}
@@ -76,6 +69,8 @@
 	let numNights: number = 7;
 
 	let amount: number = 0;
+
+	let active_item = 0;
 
 	async function submit() {
 		// avoid processing duplicates
@@ -118,10 +113,10 @@
 			},
 			body: JSON.stringify(variables)
 		});
-		data = await response.json();
-		clientSecret = data.payment_intent.client_secret;
-		amount = data.amount / 100;
-		const result = { clientSecret: data.payment_intent.client_secret, amount: amount };
+		const stripeData = await response.json();
+		clientSecret = stripeData.payment_intent.client_secret;
+		amount = stripeData.amount / 100;
+		const result = { clientSecret: stripeData.payment_intent.client_secret, amount: amount };
 		console.log({ result });
 		return result;
 	}
@@ -132,9 +127,9 @@
 
 	const handleProgress = (stepIncrement: number) => {
 		// if statements per step
-		if (currentActive == 3) {
-			formData.selected_rooms.forEach((roomId) => {
-				roomTotal += room_list[roomId].per_night;
+		if (currentActive == 1) {
+			formData.selected_rooms.forEach((i) => {
+				roomTotal += data.rooms[i].baseNightPrice * 100;
 			});
 			console.log({ roomTotal });
 		}
@@ -157,21 +152,40 @@
 </svelte:head>
 
 <main class="w-screen h-screen">
-	<div class="container mx-auto h-fit grid inline-flex items-baseline">
+	<h2>{data.location.attributes.Name}</h2>
+	<div class="mx-auto grid inline-flex items-baseline mt-10 mb-5 overflow-visible">
 		<ProgressBar {steps} bind:currentActive bind:this={progressBar} />
-		<form class="w-10/12" on:submit={handleSubmit}>
+		<form class="overflow-visible" on:submit={handleSubmit}>
 			{#if currentActive == 1}
-				<div class="swipe-holder">
-					<Swipe {...swipeConfig}>
-						{#each room_list as item, index (item.id)}
-							<SwipeItem>
-								<div class="card text-center shadow-2xl">
-									<figure class="px-10 pt-10">
-										<img src={room_list[index].image_url} alt="" class="img rounded-xl" />
+				<div
+					class="swipe-holder w-11/12 text-center overflow-visible"
+					style="height:{swipe_holder_height}px"
+				>
+					<Swipe bind:active_item {...swipeConfig}>
+						{#each data.rooms as item, index (item.id)}
+							<SwipeItem
+								active={active_item == index}
+								allow_dynamic_height={true}
+								allow_infinite_swipe={true}
+								on:swipe_item_height_change={heightChanged}
+							>
+								<div class="card w-5/12 h-full shadow-2xl p-10 m-10">
+									<figure class="p-2 m-2">
+										<img
+											src={data.rooms[index].attributes.image_url}
+											alt=""
+											class="img rounded-xl"
+										/>
 									</figure>
 									<div class="card-body">
-										<h2 class="card-title">{room_list[index].title}</h2>
-										<p>If a dog chews shoes whose shoes does he choose?</p>
+										<h2 class="card-title">{data.rooms[index].attributes.title}</h2>
+										<p>{data.rooms[index].attributes.Description}</p>
+										<p>
+											Room price per night: $<Number
+												number={data.rooms[index].attributes.baseNightPrice}
+												{locale}
+											/>
+										</p>
 										<div class="card-actions form-control has-pointer-event justify-center">
 											<label class="label cursor-pointer">
 												<span class="label-text">Stay here</span>
@@ -179,7 +193,7 @@
 													type="checkbox"
 													checked={false}
 													bind:group={formData.selected_rooms}
-													value={room_list[index].id}
+													value={data.rooms[index].id}
 													class="checkbox checkbox-primary"
 												/>
 											</label>
@@ -189,6 +203,7 @@
 							</SwipeItem>
 						{/each}
 					</Swipe>
+					<p>{formData.selected_rooms}</p>
 				</div>
 			{:else if currentActive == 2}
 				<h3>Date range picker here!</h3>
@@ -243,11 +258,13 @@
 		</form>
 
 		<div class="step-button">
-			<button class="btn" on:click={() => handleProgress(-1)} disabled={currentActive == 1}
-				>Prev</button
+			<button
+				class="btn w-64 rounded-full"
+				on:click={() => handleProgress(-1)}
+				disabled={currentActive == 1}>Prev</button
 			>
 			<button
-				class="btn"
+				class="btn w-64 rounded-full"
 				on:click={() => handleProgress(+1)}
 				disabled={currentActive == steps.length}>Next</button
 			>
@@ -256,50 +273,18 @@
 </main>
 
 <style>
-	.swipe-holder {
-		height: 50vh;
-		width: 100%;
-	}
+	@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
 	img {
 		max-width: 100%;
 		height: auto;
-		max-height: 200px;
+		max-height: 300px;
+	}
+	.swipe-holder {
+		margin: 10px;
+		height: 500px;
+		width: 100%;
 	}
 	.has-pointer-event {
 		pointer-events: fill;
-	}
-	@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
-	.btn {
-		background-color: #3498db;
-		color: #fff;
-		border: 0;
-		border-radius: 6px;
-		cursor: pointer;
-		font-family: inherit;
-		padding: 8px 30px;
-		margin: 5px;
-		font-size: 14px;
-	}
-	.btn:active {
-		transform: scale(0.98);
-	}
-	.btn:focus {
-		outline: 0;
-	}
-	.btn:disabled {
-		background-color: #e0e0e0;
-		cursor: not-allowed;
-	}
-	.step-button {
-		margin-top: 1rem;
-		text-align: center;
-	}
-	.submit {
-		background: linear-gradient(to bottom, #44c767 5%, #50b01c 100%);
-		background-color: #44c767;
-	}
-	.submit:hover {
-		background: linear-gradient(to bottom, #50b01c 5%, #44c767 100%);
-		background-color: #50b01c;
 	}
 </style>

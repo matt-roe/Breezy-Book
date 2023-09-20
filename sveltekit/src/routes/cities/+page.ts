@@ -12,10 +12,6 @@ export const load: PageLoad<OutputProps> = async ({
 	params,
 	data,
 }) => {
-	if (data.username) {
-		console.log(`Request from '${data.username}`)
-	}
-
     const res = await fetch('http://localhost:1337/pfapi/northern-cities?filters%5Biso3%5D=USA');
     const northern_cities = await res.json();
     console.log({northern_cities});

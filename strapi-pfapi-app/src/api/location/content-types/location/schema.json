@@ -12,20 +12,16 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "locationUID": {
-      "type": "uid"
-    },
     "Description": {
       "type": "richtext"
     },
     "Name": {
       "type": "string"
     },
-    "room": {
+    "rooms": {
       "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::room.room",
-      "mappedBy": "location"
+      "relation": "oneToMany",
+      "target": "api::room.room"
     }
   }
 }

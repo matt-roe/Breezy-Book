@@ -1,6 +1,7 @@
 <script>
 	import Header from '$lib/components/Header.svelte';
 	import '$lib/styles.css';
+	import '../app.css';
 </script>
 
 <div class="app">
@@ -11,7 +12,7 @@
 	</main>
 
 	<footer>
-		<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
+		<p>Visit <a href="https://breezy-book.com/">Breezy-Book.com</a> to setup your own!</p>
 	</footer>
 </div>
 

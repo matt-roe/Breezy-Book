@@ -1,4 +1,6 @@
 <script lang="ts">
+	// TO-DO: add some input to the rooms section for filters. First off would be adults and children, then pets/smoking type criteria, we may want those inputs to filter the rooms.
+
 	import ProgressBar from '$lib/components/ProgressBar.svelte';
 	import Number from '$lib/components/Number.svelte';
 
@@ -6,9 +8,10 @@
 
 	import { Swipe, SwipeItem } from 'svelte-swipe';
 
+	// TO-DO: use some animation to flip to a card back if possible. We could also just do an expand link/button or other method to hide the additional room details.
 	import { flip } from 'svelte/animate';
 
-	// TO DO: https://stripe.com/docs/billing/subscriptions/build-subscriptions?ui=elements
+	// TO-DO: https://stripe.com/docs/billing/subscriptions/build-subscriptions?ui=elements
 	import { goto } from '$app/navigation';
 	import { PUBLIC_STRIPE_KEY } from '$env/static/public';
 	import { Address, Elements, LinkAuthenticationElement, PaymentElement } from '$lib/stripe';
@@ -18,7 +21,7 @@
 	/** @type {import('./$types').PageData} */
 	export let data: any = {};
 
-	// maybe replace with https://github.com/react2svelte/swipeable and a better carousel with part of other items showing
+	// TO-DO: maybe replace with https://github.com/react2svelte/swipeable and a better carousel with part of other items showing
 	const swipeConfig = {
 		autoplay: false,
 		delay: 2000,

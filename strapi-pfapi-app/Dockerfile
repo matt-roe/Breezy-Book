@@ -9,9 +9,9 @@ COPY package.json yarn.lock ./
 RUN yarn config set network-timeout 600000 -g && yarn install
 ENV PATH /opt/node_modules/.bin:$PATH
 
-WORKDIR /opt/app
+WORKDIR /opt/build
 COPY . .
-RUN chown -R node:node /opt/app
+RUN chown -R node:node /opt/build
 USER node
 RUN ["yarn", "build"]
 EXPOSE 1337

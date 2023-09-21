@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 services:
   sveltekit:
     container_name: sveltekit
@@ -6,16 +6,33 @@ services:
     image: node:18-alpine
     restart: unless-stopped
     env_file: ./sveltekit/.env
+    environment: 
+      - NODE_ENV=production
     ports:
       - "5173:5173"
     networks:
       - strapi
     depends_on:
       - strapi
+  
+  # Run the caddy server        
+  caddy:
+    image: caddy/caddy:2.2.1-alpine
+    container_name: caddy-service
+    restart: unless-stopped
+    ports:
+        - "80:80"
+        - "443:443"
+    volumes:            
+    - ./Caddyfile:/etc/caddy/Caddyfile
+    - ./sveltekit:/sveltekit
+    - caddy_data:/data
+    - caddy_config:/config
+
       
   strapi:
     container_name: strapi
-    build: ./strapi-pfapi-app/
+    build: ./strapi-pfapi-app/build
     image: strapi:latest
     restart: unless-stopped
     env_file: ./strapi-pfapi-app/.env
@@ -66,6 +83,8 @@ services:
 
 volumes:
   strapi-data:
+  caddy_data:
+  caddy_config: 
 
 networks:
   strapi:

@@ -40,6 +40,9 @@
     },
     "per_night": {
       "type": "biginteger"
+    },
+    "card_height": {
+      "type": "integer"
     }
   }
 }

@@ -1,5 +1,18 @@
 version: "3"
 services:
+  sveltekit:
+    container_name: sveltekit
+    build: ./sveltekit/
+    image: node:18-alpine
+    restart: unless-stopped
+    env_file: ./sveltekit/.env
+    ports:
+      - "5173:5173"
+    networks:
+      - strapi
+    depends_on:
+      - strapi
+      
   strapi:
     container_name: strapi
     build: ./strapi-pfapi-app/

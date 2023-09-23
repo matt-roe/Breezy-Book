@@ -1,18 +1,19 @@
 <script>
 	import Header from '$lib/components/Header.svelte';
+	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import '$lib/styles.css';
 	import '../app.css';
 </script>
 
 <div class="app">
 	<Header />
-
+	<Breadcrumb />
 	<main>
 		<slot />
 	</main>
 
 	<footer>
-		<p>Visit <a href="https://breezy-book.com/">Breezy-Book.com</a> to setup your own!</p>
+		<p>Click <a href="http://localhost:1337/admin/register-admin">here</a> to setup your own!</p>
 	</footer>
 </div>
 

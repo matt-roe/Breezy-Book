@@ -11,9 +11,11 @@
   },
   "devDependencies": {},
   "dependencies": {
+    "@notum-cz/strapi-plugin-record-locking": "^0.3.4",
     "@offset-dev/strapi-calendar": "^0.0.10",
     "@strapi/plugin-i18n": "4.13.6",
     "@strapi/plugin-users-permissions": "4.13.6",
+    "@strapi/provider-email-sendgrid": "^4.13.7",
     "@strapi/strapi": "4.13.6",
     "better-sqlite3": "8.6.0",
     "strapi-google-auth": "^0.1.2",

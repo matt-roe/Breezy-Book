@@ -8,6 +8,7 @@ export async function load({ fetch, params }) {
     console.log(rooms);
 
 	return {
+        siteId: params.site,
         location: location,
         rooms: rooms,
 	}

@@ -1,15 +1,9 @@
-/** @type {import('./$types').PageLoad} */
-export async function load({ fetch, params }) {
-    const res = await fetch('http://localhost:1337/api/sites/1?populate=*');
-    const response = await res.json();
-    console.log({response});
-    const site = response.data
-    console.log({site});
-    const locations = site.attributes.locations.data
-    console.log({locations});
+import { dev } from '$app/environment';
 
-	return {
-        site: site,
-        locations: locations,
-	}
-}
+// we don't need any JS on this page, though we'll load
+// it in dev so that we get hot module replacement
+export const csr = dev;
+
+// since there's no dynamic data here, we can prerender
+// it so that it gets served as a static asset in production
+export const prerender = true;

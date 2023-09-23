@@ -96,7 +96,8 @@
 			processing = false;
 		} else {
 			// payment succeeded, redirect to "thank you" page
-			goto('thanks');
+			let thanksPath = '/site/' + data.site + '/location/' + data.location.id + '/thanks';
+			goto(thanksPath);
 		}
 	}
 

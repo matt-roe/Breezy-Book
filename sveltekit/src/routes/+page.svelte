@@ -1,19 +1,13 @@
-<script lang="ts">
-	/** @type {import('./$types').PageData} */
-	export let data: any = {};
-</script>
-
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Breezy Book" />
+	<title>About</title>
+	<meta name="description" content="About this app" />
 </svelte:head>
-<main class="w-screen h-fill">
-	<h1>{data.site.attributes.Name}</h1>
-	{#each data.locations as item, index}
-		<br />
-		<a href={item.id}>{item.attributes.Name}</a>
-	{/each}
-</main>
 
-<style>
-</style>
+<div class="text-column">
+	<h1>Breezy Book</h1>
+	<p>
+		We make it easy to create your customized direct booking website. It costs nothing to get
+		started, we simply take an additional 2% above the credit card processing fee as a transaction
+		fee, from those booking services.
+	</p>
+</div>

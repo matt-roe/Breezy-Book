@@ -24,7 +24,7 @@
 	// TO-DO: maybe replace with https://github.com/react2svelte/swipeable and a better carousel with part of other items showing
 	const swipeConfig = {
 		autoplay: false,
-		delay: 2000,
+		delay: 5000,
 		showIndicators: true,
 		transitionDuration: 1000,
 		defaultIndex: 0
@@ -37,19 +37,15 @@
 		console.log(detail.height);
 		swipe_holder_height = detail.height;
 		console.log(swipe_holder_height);
+		// under swipe item goes: on:swipe_item_height_change={heightChanged}>
 	}
 
 	let formData = {
 		name: '',
 		surname: '',
 		email: '',
-		password: '',
-		address: '',
-		city: '',
-		country: '',
-		postcode: '',
-		account_name: '',
-		card_no: '',
+		phone: '',
+		stripeCustomerId: '',
 		selected_rooms: []
 	};
 
@@ -157,6 +153,7 @@
 			}
 		}
 		if (currentActive == 2) {
+			// create customer
 		}
 		progressBar.handleProgress(stepIncrement);
 		console.log({ currentActive });
@@ -186,24 +183,19 @@
 		<button>close</button>
 	</form>
 </dialog>
-<main class="w-screen h-fill">
-	<h2>{data.location.attributes.Name}</h2>
-	<div class="mx-auto grid inline-flex items-baseline mt-10">
-		<ProgressBar {steps} bind:currentActive bind:this={progressBar} />
-		<form class="" on:submit={handleSubmit}>
+<main class="w-screen h-fit flex-col grid place-content-center overflow-visible">
+	<h1 class="text-center">{data.location.attributes.Name}</h1>
+	<div class="mt-10 overflow-visible">
+		<div class="w-full">
+			<ProgressBar {steps} bind:currentActive bind:this={progressBar} />
+		</div>
+		<form class="w-full overflow-visible" on:submit={handleSubmit}>
 			{#if currentActive == 1}
-				<div class="swipe-holder w-11/12" style="height:{swipe_holder_height}px">
+				<div class="w-full overflow-visible" style="height:{swipe_holder_height}px">
 					<Swipe bind:active_item {...swipeConfig}>
 						{#each data.rooms as item, index}
-							<SwipeItem
-								active={active_item == index}
-								allow_dynamic_height={true}
-								on:swipe_item_height_change={heightChanged}
-							>
-								<div
-									class="card w-5/12 shadow-2xl h-full"
-									style="height:{item.attributes.height}px"
-								>
+							<SwipeItem active={active_item == index} allow_dynamic_height={true}>
+								<div class="card w-7/12 shadow-2xl" style="height:{item.attributes.height}px">
 									<figure class="">
 										<img src={item.attributes.image_url} alt="" class="img rounded-xl" />
 									</figure>
@@ -242,13 +234,10 @@
 					Info and configurations for stay, maybe extra costs. Number of people staying in the room,
 					etc.
 				</h3>
-				<InputField label={'Name'} bind:value={formData.name} />
-				<InputField label={'Surname'} bind:value={formData.surname} />
+				<InputField label={'First Name'} bind:value={formData.name} />
+				<InputField label={'Last Name'} bind:value={formData.surname} />
 				<InputField label={'Email'} bind:value={formData.email} />
-				<InputField label={'Address'} bind:value={formData.address} />
-				<InputField label={'City'} bind:value={formData.city} />
-				<InputField label={'Country'} bind:value={formData.country} />
-				<InputField label={'Postcode'} bind:value={formData.postcode} />
+				<InputField label={'Phone'} bind:value={formData.phone} />
 			{:else if currentActive == 4}
 				{#await prepClientSecret()}
 					<p>Loading...</p>
@@ -289,12 +278,12 @@
 
 		<div class="step-button mt-10">
 			<button
-				class="btn w-64 rounded-full"
+				class="btn btn-secondary w-64 rounded-full"
 				on:click={() => handleProgress(-1)}
 				disabled={currentActive == 1}>Prev</button
 			>
 			<button
-				class="btn w-64 rounded-full"
+				class="btn btn-secondary w-64 rounded-full"
 				on:click={() => handleProgress(+1)}
 				disabled={currentActive == steps.length}>Next</button
 			>
@@ -309,12 +298,14 @@
 		height: auto;
 		max-height: 300px;
 	}
-	.swipe-holder {
-		margin: 10px;
-		height: 500px;
-		width: 100%;
-	}
 	.has-pointer-event {
 		pointer-events: fill;
+	}
+	:root {
+		--sv-swipe-panel-height: inherit;
+		--sv-swipe-panel-width: inherit;
+		--sv-swipe-panel-wrapper-index: 2;
+		--sv-swipe-indicator-active-color: rgb(159, 255, 150);
+		--sv-swipe-handler-top: 0px;
 	}
 </style>

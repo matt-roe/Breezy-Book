@@ -5,7 +5,7 @@
 	import '../app.css';
 </script>
 
-<div class="app">
+<div class="justify-items-center">
 	<Header />
 	<Breadcrumb />
 	<main>
@@ -13,28 +13,15 @@
 	</main>
 
 	<footer>
-		<p>Click <a href="http://localhost:1337/admin/register-admin">here</a> to setup your own!</p>
+		<p>
+			Own a rental? Create your own <a href="http://localhost:1337/admin/register-admin"
+				>Breezy Book</a
+			> page for free!
+		</p>
 	</footer>
 </div>
 
 <style>
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
-
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-
 	footer {
 		display: flex;
 		flex-direction: column;

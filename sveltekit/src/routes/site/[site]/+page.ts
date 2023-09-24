@@ -1,15 +1,11 @@
 /** @type {import('./$types').PageLoad} */
 export async function load({ fetch, params }) {
-    const res = await fetch('http://localhost:1337/api/sites/'+params.site+'?populate=*');
+    const res = await fetch('http://localhost:1337/api/sites/'+params.site+'?populate[0]=locations&populate[1]=locations.rooms');
     const response = await res.json();
-    console.log({response});
     const site = response.data
-    console.log({site});
     const locations = site.attributes.locations.data
-    console.log({locations});
-
 	return {
         site: site,
-        locations: locations,
+        locations: locations
 	}
 }

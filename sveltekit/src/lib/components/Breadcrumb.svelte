@@ -22,30 +22,23 @@
 
 <div class="breadcrumb">
 	{#each crumbs as c, i}
-		{#if i == crumbs.length - 1}
-			<span class="label">
-				{c.label}
-			</span>
-		{:else}
-			<a href={c.href}>{c.label}</a> &gt;&nbsp;
+		{#if i == 1}
+			<a href={crumbs[2].href}>{c.label}</a> &gt;&nbsp;
+		{/if}
+		{#if i == 3}
+			<a href={crumbs[4].href}>{c.label}</a>
 		{/if}
 	{/each}
 </div>
 
 <style lang="scss">
 	.breadcrumb {
-		margin: 0 1.5rem;
-		padding: 1rem 2rem;
-
+		position: relative;
+		margin-top: -35px;
+		margin-left: 70px;
 		a {
-			display: inline-block;
-			color: red;
-			padding: 0 0.5rem;
-		}
-
-		.label {
-			padding-left: 0.5rem;
-			color: blue;
+			color: grey;
+			padding: -10px 1rem;
 		}
 	}
 </style>

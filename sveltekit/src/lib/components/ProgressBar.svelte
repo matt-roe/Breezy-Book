@@ -49,9 +49,9 @@
 		display: flex;
 		justify-content: space-between;
 		position: relative;
-		margin-bottom: 30px;
+		margin-bottom: 20px;
 		max-width: 100%;
-		width: 350px;
+		width: inherit;
 	}
 
 	.progress-container::before {
@@ -82,12 +82,12 @@
 		background-color: #fff;
 		color: #999;
 		border-radius: 50%;
-		height: 30px;
-		width: 30px;
+		height: 37px;
+		width: 37px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border: 3px solid #e0e0e0;
+		border: 2px solid #e0e0e0;
 		transition: 0.4s ease;
 		cursor: pointer;
 	}
@@ -101,10 +101,10 @@
 	}
 
 	.circle.active::after {
-		color: #3498db;
+		color: #242424;
 	}
 
 	.circle.active {
-		border-color: #3498db;
+		border-color: #92ff97;
 	}
 </style>

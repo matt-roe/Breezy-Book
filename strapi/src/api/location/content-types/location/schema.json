@@ -1,0 +1,72 @@
+{
+  "kind": "collectionType",
+  "collectionName": "locations",
+  "info": {
+    "singularName": "location",
+    "pluralName": "locations",
+    "displayName": "Location",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string"
+    },
+    "Description": {
+      "type": "richtext"
+    },
+    "units": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::unit.unit"
+    },
+    "Location": {
+      "type": "customField",
+      "customField": "plugin::google-maps.location-picker"
+    },
+    "BookingPageColor": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "Timezone": {
+      "type": "customField",
+      "customField": "plugin::timezone-select.timezone"
+    },
+    "Slug": {
+      "type": "customField",
+      "options": {
+        "pattern": "title"
+      },
+      "customField": "plugin::slug.slug"
+    },
+    "Preview": {
+      "type": "customField",
+      "customField": "plugin::pagepreview.page-preview"
+    },
+    "Comments": {
+      "type": "customField",
+      "customField": "plugin::comments.comments"
+    },
+    "CommentsEnabled": {
+      "type": "boolean"
+    },
+    "Images": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "ImageURL": {
+      "type": "string"
+    }
+  }
+}

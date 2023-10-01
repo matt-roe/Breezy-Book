@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "stays",
+  "info": {
+    "singularName": "stay",
+    "pluralName": "stays",
+    "displayName": "Booking",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Name": {
+      "type": "string"
+    },
+    "Email": {
+      "type": "email"
+    },
+    "CheckIn": {
+      "type": "datetime"
+    },
+    "CheckOut": {
+      "type": "datetime"
+    },
+    "Phone": {
+      "type": "biginteger"
+    },
+    "units": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::unit.unit"
+    }
+  }
+}

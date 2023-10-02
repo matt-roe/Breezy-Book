@@ -1,6 +1,7 @@
 {
   "extends": "@strapi/typescript-utils/tsconfigs/server",
   "compilerOptions": {
+    "strict": false,
     "outDir": "dist",
     "rootDir": "."
   },
